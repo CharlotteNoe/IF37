@@ -100,9 +100,13 @@ void checkPompeButton() {
 
 
 void checkPotentiometre() {
+  static int last_volume = -1;
   int analog_value = analogRead(PIN_POTEN); // 0 - 4095
-  int volume = map(analog_value, 0, 4095, 0, 60); // Volume 0 - 30
-  dfplayer.volume(volume);  // règle le volume DFPlayer
+  int volume = map(analog_value, 0, 4095, 0, 30); // Volume 0 - 30
+  if (volume != last_volume) {
+    dfplayer.volume(volume);  // règle le volume DFPlayer
+    last_volume = volume;
+  }
 }
 
 
@@ -116,21 +120,21 @@ void updateRespirationCycle() {
         digitalWrite(PIN_MOSFET, LOW);        // Pompe OFF
         phase = 2;
         cycleStartTime = now;
-        Serial.println("⏸️ Pause (2s)");
+        Serial.println("⏸️ Pause (7s)");
       }
       break;
 
-    case 2: // Pause (2s)
-      if (elapsed >= 2000) {
+    case 2: // Pause (7s)
+      if (elapsed >= 7000) {
         phase = 3;
         cycleStartTime = now;
-        Serial.println("⬇️ Dégonflage (3s)");
+        Serial.println("⬇️ Dégonflage (8s)");
         digitalWrite(ELECTROVANNE_PIN, HIGH); // Ferme la vanne (pression relâchée)
       }
       break;
 
-    case 3: // Dégonflage (3s)
-      if (elapsed >= 3000) {
+    case 3: // Dégonflage (8s)
+      if (elapsed >= 8000) {
         phase = 1;
         cycleStartTime = now;
         digitalWrite(ELECTROVANNE_PIN, LOW); 
